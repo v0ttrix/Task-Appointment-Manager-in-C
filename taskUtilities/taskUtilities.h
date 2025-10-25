@@ -1,13 +1,21 @@
-//Jaden Mardini - PROG71990 - f24 - sec1 - GROUP #2
+/**
+ * Task Utilities Header
+ * Author: Jaden Mardini - PROG71990 - f24 - sec1 - GROUP #2
+ * 
+ * Utility functions for task validation and helper operations.
+ */
 
-#pragma once // ensures the file is included only once
+#ifndef TASK_UTILITIES_H
+#define TASK_UTILITIES_H
 
-#ifndef TASK_UTILITIES_H // checks if TASK_UTILITIES_H is not defined
-#define TASK_UTILITIES_H // defines TASK_UTILITIES_H to avoid multiple inclusions
+#include <stdbool.h>
 
-// function prototype for validating a date
-// takes a const char* as input (date in string format)
-// returns an int: 1 if the date is valid, 0 otherwise
-int isValidDate(const char* date);
+/* Date validation function */
+bool isValidDate(const char* date);
 
-#endif // ends the TASK_UTILITIES_H conditional inclusion
+/* Input validation helpers */
+bool getValidatedInput(char* buffer, int maxLength, const char* prompt);
+void clearInputBuffer(void);
+int getValidatedInteger(const char* prompt, int min, int max);
+
+#endif /* TASK_UTILITIES_H */

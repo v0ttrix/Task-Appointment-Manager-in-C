@@ -1,10 +1,20 @@
-//YashB - PROG71990 - Fall2024 - Group 2 - Project
+/**
+ * Task Storage Handler Header
+ * Author: YashB - PROG71990 - Fall2024 - Group 2 - Project
+ * 
+ * Functions for persistent storage of task data to/from disk.
+ */
 
-#pragma once
 #ifndef TASK_STORAGE_HANDLER_H
 #define TASK_STORAGE_HANDLER_H
 
-void loadDataFromDisk();    //load the task data from disk to memory
-void saveDataToDisk();  //save task data from memory to disk
+#include <stdbool.h>
 
-#endif
+/* Storage file configuration */
+#define STORAGE_FILENAME "tasks.dat"
+
+/* Storage operation functions */
+bool loadDataFromDisk(void);
+bool saveDataToDisk(void);
+
+#endif /* TASK_STORAGE_HANDLER_H */

@@ -1,11 +1,20 @@
-// Max - PROG71990 -  f24 - Sec 1 - Group 2
+/**
+ * Task Display Manager Header
+ * Author: Max - PROG71990 - f24 - Sec 1 - Group 2
+ * 
+ * Functions for displaying task information in various formats.
+ */
 
-#pragma once
 #ifndef TASK_DISPLAY_MANAGER_H
 #define TASK_DISPLAY_MANAGER_H
 
-void displaySingleTask();  // Displays a single task                             
-void displayTasksInRange();   //  Displays tasks within range
-void displayAllTasks();  // Displays  all tasks
+/* Display functions */
+void displaySingleTask(void);
+void displayTasksInRange(void);
+void displayAllTasks(void);
 
-#endif
+/* Helper display functions */
+void printTaskHeader(void);
+void printTaskSeparator(void);
+
+#endif /* TASK_DISPLAY_MANAGER_H */

@@ -1,184 +1,249 @@
-//Jaden Mardini - PROG71990 - f24 - sec1 - GROUP #2
+#include <stdbool.h>
+/**
+ * Task Manager Operations Implementation
+ * Author: Jaden Mardini - PROG71990 - f24 - sec1 - GROUP #2
+ * 
+ * Core implementation of task management operations including CRUD functionality.
+ */
 
-#define _CRT_SECURE_NO_WARNINGS // disables warnings for unsafe functions like scanf and fgets on Windows
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <ctype.h>
+#include "taskManagerOperations.h"
+#include "../taskUtilities/taskUtilities.h"
 
-#include "../testTaskManagerAppfunctions/pch.h" // precompiled header for faster compilation
-#include <stdio.h> // standard input/output functions
-#include <string.h> // for string manipulation (like strcmp, fgets)
-#include <stdlib.h> // for system calls like malloc or exit
-#include "../taskStorageHandler/taskStorageHandler.h" // handles loading/saving tasks
-#include "../taskUtilities/taskUtilities.h" // utility functions like date validation
-#include "taskManagerOperations.h" // task operations like add, delete, update
+/* Global variables definition */
+int taskCount = 0;
+Task tasks[MAX_TASKS];
 
-#define MAX_TASKS 100 // maximum number of tasks allowed
-
-int taskCount = 0;            // global variable to keep track of the number of tasks
-Task tasks[MAX_TASKS];        // global array to store all tasks
-
-void addTask()
-{
-    // checks if the task array is full
-    if (taskCount >= MAX_TASKS) {
-        printf("Task list is full!\n");
-        return; // exits early if no more tasks can be added
-    }
-
-    // prompt the user to enter the task description
-    printf("Enter task description: ");
-    fgets(tasks[taskCount].description, 100, stdin); // reads the description
-    tasks[taskCount].description[strcspn(tasks[taskCount].description, "\n")] = '\0'; // removes trailing newline
-
-    // prompt the user to enter the task date
-    printf("Enter task date (YYYY-MM-DD): ");
-    fgets(tasks[taskCount].date, 11, stdin); // reads the date
-    tasks[taskCount].date[strcspn(tasks[taskCount].date, "\n")] = '\0'; // removes trailing newline
-
-    taskCount++; // increments the task counter
-    printf("Task added successfully.\n"); // confirms the task was added
+/**
+ * Checks if the task array is at maximum capacity
+ * @return: true if full, false otherwise
+ */
+bool isTaskArrayFull(void) {
+    return taskCount >= MAX_TASKS;
 }
 
-void deleteTask()
-{
-    int taskId;
-    // prompts the user to enter the task ID to delete
-    printf("Enter task ID to delete (0-%d): ", taskCount - 1);
-    scanf_s("%d", &taskId); // reads the ID
-    (void)getchar();  // consumes the newline character left by scanf_s
+/**
+ * Validates if a task ID is within valid range
+ * @param taskId: The task ID to validate
+ * @return: true if valid, false otherwise
+ */
+bool isValidTaskId(int taskId) {
+    return taskId >= 0 && taskId < taskCount;
+}
 
-    // validates the entered task ID
-    if (taskId < 0 || taskId >= taskCount) 
-    {
-        printf("Invalid task ID.\n");
-        return; // exits if the ID is invalid
+/**
+ * Prints formatted task details
+ * @param taskId: The ID of the task to print
+ */
+void printTaskDetails(int taskId) {
+    if (!isValidTaskId(taskId)) {
+        printf("Invalid task ID: %d\n", taskId);
+        return;
     }
+    
+    printf("%-4d %-30.30s %-12s\n", taskId, tasks[taskId].description, tasks[taskId].date);
+}
 
-    // shifts tasks down to fill the gap left by the deleted task
-    for (int i = taskId; i < taskCount - 1; i++) 
-    {
+/**
+ * Adds a new task to the system
+ * @return: true if successful, false otherwise
+ */
+bool addTask(void) {
+    if (isTaskArrayFull()) {
+        printf("Error: Task list is full! Cannot add more tasks.\n");
+        return false;
+    }
+    
+    char description[MAX_DESCRIPTION_LENGTH];
+    char date[MAX_DATE_LENGTH];
+    
+    /* Get and validate task description */
+    if (!getValidatedInput(description, sizeof(description), "Enter task description: ")) {
+        printf("Error: Invalid description input.\n");
+        return false;
+    }
+    
+    /* Get and validate task date */
+    do {
+        if (!getValidatedInput(date, sizeof(date), "Enter task date (YYYY-MM-DD): ")) {
+            printf("Error: Invalid date input.\n");
+            return false;
+        }
+        
+        if (!isValidDate(date)) {
+            printf("Error: Invalid date format. Please use YYYY-MM-DD format.\n");
+            continue;
+        }
+        break;
+    } while (1);
+    
+    /* Store the validated task */
+    strncpy(tasks[taskCount].description, description, MAX_DESCRIPTION_LENGTH - 1);
+    tasks[taskCount].description[MAX_DESCRIPTION_LENGTH - 1] = '\0';
+    
+    strncpy(tasks[taskCount].date, date, MAX_DATE_LENGTH - 1);
+    tasks[taskCount].date[MAX_DATE_LENGTH - 1] = '\0';
+    
+    taskCount++;
+    printf("Task added successfully! (ID: %d)\n", taskCount - 1);
+    return true;
+}
+
+/**
+ * Deletes a task from the system
+ * @return: true if successful, false otherwise
+ */
+bool deleteTask(void) {
+    if (taskCount == 0) {
+        printf("No tasks available to delete.\n");
+        return false;
+    }
+    
+    printf("Current tasks:\n");
+    displayAllTasks();
+    
+    int taskId = getValidatedInteger("Enter task ID to delete (0-%d): ", 0, taskCount - 1);
+    
+    if (!isValidTaskId(taskId)) {
+        printf("Error: Invalid task ID.\n");
+        return false;
+    }
+    
+    /* Show task to be deleted */
+    printf("\nTask to be deleted:\n");
+    printf("ID: %d, Description: %s, Date: %s\n", 
+           taskId, tasks[taskId].description, tasks[taskId].date);
+    
+    /* Confirm deletion */
+    char confirm;
+    printf("Are you sure you want to delete this task? (y/N): ");
+    confirm = getchar();
+    clearInputBuffer();
+    
+    if (tolower(confirm) != 'y') {
+        printf("Task deletion cancelled.\n");
+        return false;
+    }
+    
+    /* Shift tasks to fill the gap */
+    for (int i = taskId; i < taskCount - 1; i++) {
         tasks[i] = tasks[i + 1];
     }
-    taskCount--; // decrements the task counter
-    printf("Task deleted successfully.\n"); // confirms deletion
+    
+    taskCount--;
+    printf("Task deleted successfully!\n");
+    return true;
 }
 
-void updateTask() {
-    int taskId;
-    // prompts the user to enter the task ID to update
-    printf("Enter task ID to update (0-%d): ", taskCount - 1);
-    scanf_s("%d", &taskId);
-    (void)getchar();  // consumes the newline character left by scanf_s
-
-    // validates the entered task ID
-    if (taskId < 0 || taskId >= taskCount) 
-    {
-        printf("Invalid task ID.\n");
-        return; // exits if the ID is invalid
+/**
+ * Updates an existing task
+ * @return: true if successful, false otherwise
+ */
+bool updateTask(void) {
+    if (taskCount == 0) {
+        printf("No tasks available to update.\n");
+        return false;
     }
-
-    // prompts the user for a new task description
-    printf("Enter new task description: ");
-    fgets(tasks[taskId].description, 100, stdin);
-    tasks[taskId].description[strcspn(tasks[taskId].description, "\n")] = '\0'; // removes trailing newline
-
-    // prompts the user for a new task date
-    printf("Enter new task date (YYYY-MM-DD): ");
-    fgets(tasks[taskId].date, 11, stdin);
-    tasks[taskId].date[strcspn(tasks[taskId].date, "\n")] = '\0';
-
-    printf("Task updated successfully.\n"); // confirms the task was updated
-}
-
-void displaySingleTask() {
-    int taskId;
-    // prompts the user to enter the task ID to display
-    printf("Enter task ID to display (0-%d): ", taskCount - 1);
-    scanf_s("%d", &taskId);
-    (void)getchar();  // consumes the newline character left by scanf_s
-
-    // validates the entered task ID
-    if (taskId < 0 || taskId >= taskCount) 
-    {
-        printf("Invalid task ID.\n");
-        return; // exits if the ID is invalid
+    
+    printf("Current tasks:\n");
+    displayAllTasks();
+    
+    int taskId = getValidatedInteger("Enter task ID to update (0-%d): ", 0, taskCount - 1);
+    
+    if (!isValidTaskId(taskId)) {
+        printf("Error: Invalid task ID.\n");
+        return false;
     }
-
-    // displays the task details
-    printf("Task ID: %d\n", taskId);
+    
+    /* Show current task details */
+    printf("\nCurrent task details:\n");
     printf("Description: %s\n", tasks[taskId].description);
     printf("Date: %s\n", tasks[taskId].date);
+    
+    char newDescription[MAX_DESCRIPTION_LENGTH];
+    char newDate[MAX_DATE_LENGTH];
+    
+    /* Get new description */
+    if (!getValidatedInput(newDescription, sizeof(newDescription), 
+                          "Enter new description (or press Enter to keep current): ")) {
+        /* Keep current description if input is empty */
+        strcpy(newDescription, tasks[taskId].description);
+    }
+    
+    /* Get new date */
+    do {
+        if (!getValidatedInput(newDate, sizeof(newDate), 
+                              "Enter new date (YYYY-MM-DD) or press Enter to keep current: ")) {
+            /* Keep current date if input is empty */
+            strcpy(newDate, tasks[taskId].date);
+            break;
+        }
+        
+        if (!isValidDate(newDate)) {
+            printf("Error: Invalid date format. Please use YYYY-MM-DD format.\n");
+            continue;
+        }
+        break;
+    } while (1);
+    
+    /* Update the task */
+    strncpy(tasks[taskId].description, newDescription, MAX_DESCRIPTION_LENGTH - 1);
+    tasks[taskId].description[MAX_DESCRIPTION_LENGTH - 1] = '\0';
+    
+    strncpy(tasks[taskId].date, newDate, MAX_DATE_LENGTH - 1);
+    tasks[taskId].date[MAX_DATE_LENGTH - 1] = '\0';
+    
+    printf("Task updated successfully!\n");
+    return true;
 }
 
-void displayTasksInRange() 
-{
-    char startDate[11], endDate[11];
-
-    // prompts the user for the start date
-    printf("Enter start date (YYYY-MM-DD): ");
-    fgets(startDate, sizeof(startDate), stdin);
-    startDate[strcspn(startDate, "\n")] = '\0'; // removes trailing newline
-
-    // prompts the user for the end date
-    printf("Enter end date (YYYY-MM-DD): ");
-    fgets(endDate, sizeof(endDate), stdin);
-    endDate[strcspn(endDate, "\n")] = '\0'; // removes trailing newline
-
-    printf("\nDisplaying tasks between %s and %s:\n", startDate, endDate);
-
-    int found = 0;  // tracks if any tasks fall within the range
+/**
+ * Searches for tasks containing a specific keyword
+ */
+void searchTasks(void) {
+    if (taskCount == 0) {
+        printf("No tasks available to search.\n");
+        return;
+    }
+    
+    char searchTerm[MAX_DESCRIPTION_LENGTH];
+    
+    if (!getValidatedInput(searchTerm, sizeof(searchTerm), "Enter search term: ")) {
+        printf("Error: Invalid search term.\n");
+        return;
+    }
+    
+    /* Convert search term to lowercase for case-insensitive search */
+    for (int i = 0; searchTerm[i]; i++) {
+        searchTerm[i] = tolower(searchTerm[i]);
+    }
+    
+    printf("\nSearch results for '%s':\n", searchTerm);
+    
+    bool found = false;
     for (int i = 0; i < taskCount; i++) {
-        // checks if the task date falls within the range
-        if (strcmp(tasks[i].date, startDate) >= 0 && strcmp(tasks[i].date, endDate) <= 0) 
-        {
-            printf("Task ID: %d\n", i);
-            printf("Description: %s\n", tasks[i].description);
-            printf("Date: %s\n", tasks[i].date);
-            printf("---------------------------\n");
-            found = 1; // marks that at least one task was found
+        char lowerDescription[MAX_DESCRIPTION_LENGTH];
+        strcpy(lowerDescription, tasks[i].description);
+        
+        /* Convert description to lowercase for comparison */
+        for (int j = 0; lowerDescription[j]; j++) {
+            lowerDescription[j] = tolower(lowerDescription[j]);
+        }
+        
+        if (strstr(lowerDescription, searchTerm) != NULL) {
+            if (!found) {
+                printf("%-4s %-30s %-12s\n", "ID", "Description", "Date");
+                printf("%-4s %-30s %-12s\n", "----", "------------------------------", "------------");
+                found = true;
+            }
+            printTaskDetails(i);
         }
     }
-
-    // if no tasks are found, informs the user
-    if (!found) 
-    {
-        printf("No tasks found in the specified date range.\n");
-    }
-}
-
-void displayAllTasks()
-{
-    // checks if there are no tasks to display
-    if (taskCount == 0) 
-    {
-        printf("No tasks available.\n");
-        return; // exits early
-    }
-
-    printf("Displaying all tasks:\n");
-    for (int i = 0; i < taskCount; i++)
-    {
-        // displays each task's details
-        printf("Task ID: %d\n", i);
-        printf("Description: %s\n", tasks[i].description);
-        printf("Date: %s\n", tasks[i].date);
-    }
-}
-
-void searchTasks() 
-{
-    char searchTerm[100];
-    // prompts the user for a search term
-    printf("Enter search term: ");
-    fgets(searchTerm, 100, stdin);
-    searchTerm[strcspn(searchTerm, "\n")] = '\0'; // removes trailing newline
-
-    printf("Searching for tasks containing '%s':\n", searchTerm);
-    for (int i = 0; i < taskCount; i++) 
-    {
-        // checks if the description contains the search term
-        if (strstr(tasks[i].description, searchTerm) != NULL) {
-            printf("Task ID: %d\n", i);
-            printf("Description: %s\n", tasks[i].description);
-            printf("Date: %s\n", tasks[i].date);
-        }
+    
+    if (!found) {
+        printf("No tasks found containing '%s'.\n", searchTerm);
     }
 }

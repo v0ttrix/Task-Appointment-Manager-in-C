@@ -1,47 +1,95 @@
-//YashB - PROG71990 - Fall2024 - Group 2 - Project
-
-#define _CRT_SECURE_NO_WARNINGS
+#include <stdbool.h>
+/**
+ * Task Storage Handler Implementation
+ * Author: YashB - PROG71990 - Fall2024 - Group 2 - Project
+ * 
+ * Implementation of persistent storage operations for task data.
+ */
 
 #include <stdio.h>
-#include "taskStorageHandler.h"//header for storage functions
-#include "../taskManagerOperations/taskManagerOperations.h" //header for task manager operations
-#include "../taskManagerOperations/taskManagerOperations.c"//header for including implementation of task manager operations 
+#include <string.h>
+#include <stdbool.h>
+#include "taskStorageHandler.h"
+#include "../taskManagerOperations/taskManagerOperations.h"
 
-extern int taskCount;   //track number of tasks
-extern Task tasks[MAX_TASKS];  //array of tasks
-
-void loadDataFromDisk() 
-{
-    FILE* file = fopen("tasks.dat", "r");       //open file
-    if (file) 
-    {
-        while (fscanf_s(file, "%99[^\n]\n%10s\n", tasks[taskCount].description, (unsigned int)sizeof(tasks[taskCount].description), tasks[taskCount].date, (unsigned int)sizeof(tasks[taskCount].date)) == 2)
-        {
-            taskCount++;
-            if (taskCount >= MAX_TASKS) break;  //to prevent exceeding the maximum amount of tasks
+/**
+ * Loads task data from disk into memory
+ * @return: true if successful, false otherwise
+ */
+bool loadDataFromDisk(void) {
+    FILE* file = fopen(STORAGE_FILENAME, "r");
+    if (!file) {
+        printf("No saved data found, starting with empty task list.\n");
+        return true; /* Not an error - just no existing data */
+    }
+    
+    taskCount = 0;
+    char description[MAX_DESCRIPTION_LENGTH];
+    char date[MAX_DATE_LENGTH];
+    
+    while (taskCount < MAX_TASKS) {
+        /* Read description line */
+        if (!fgets(description, sizeof(description), file)) {
+            break; /* End of file or error */
         }
-        fclose(file);       // close file once done reading
-        printf("Tasks loaded successfully.\n");
+        
+        /* Remove trailing newline from description */
+        description[strcspn(description, "\n")] = '\0';
+        
+        /* Read date line */
+        if (!fgets(date, sizeof(date), file)) {
+            fprintf(stderr, "Warning: Incomplete task data found, skipping.\n");
+            break;
+        }
+        
+        /* Remove trailing newline from date */
+        date[strcspn(date, "\n")] = '\0';
+        
+        /* Validate data before storing */
+        if (strlen(description) == 0 || strlen(date) != 10) {
+            fprintf(stderr, "Warning: Invalid task data found, skipping.\n");
+            continue;
+        }
+        
+        /* Store the task */
+        strncpy(tasks[taskCount].description, description, MAX_DESCRIPTION_LENGTH - 1);
+        tasks[taskCount].description[MAX_DESCRIPTION_LENGTH - 1] = '\0';
+        
+        strncpy(tasks[taskCount].date, date, MAX_DATE_LENGTH - 1);
+        tasks[taskCount].date[MAX_DATE_LENGTH - 1] = '\0';
+        
+        taskCount++;
     }
-    else {  //for cases where file doesn't exist
-        printf("No saved data found, starting fresh.\n");
-    }
+    
+    fclose(file);
+    printf("Successfully loaded %d tasks from disk.\n", taskCount);
+    return true;
 }
 
-void saveDataToDisk()
-{
-    FILE* file = fopen("tasks.dat", "w");   //open file for writing
-    if (file) 
-    {
-        for (int i = 0; i < taskCount; i++)
-        {
-            fprintf(file, "%s\n%s\n", tasks[i].description, tasks[i].date);
+/**
+ * Saves task data from memory to disk
+ * @return: true if successful, false otherwise
+ */
+bool saveDataToDisk(void) {
+    FILE* file = fopen(STORAGE_FILENAME, "w");
+    if (!file) {
+        fprintf(stderr, "Error: Unable to open file for saving tasks.\n");
+        return false;
+    }
+    
+    for (int i = 0; i < taskCount; i++) {
+        if (fprintf(file, "%s\n%s\n", tasks[i].description, tasks[i].date) < 0) {
+            fprintf(stderr, "Error: Failed to write task %d to file.\n", i);
+            fclose(file);
+            return false;
         }
-        fclose(file);       //close file and save successfully
-        printf("Tasks saved successfully.\n");
     }
-    else 
-    {
-        printf("Error saving data.\n");     //to handle cases where file cant be saved
+    
+    if (fclose(file) != 0) {
+        fprintf(stderr, "Error: Failed to close file properly.\n");
+        return false;
     }
+    
+    printf("Successfully saved %d tasks to disk.\n", taskCount);
+    return true;
 }
