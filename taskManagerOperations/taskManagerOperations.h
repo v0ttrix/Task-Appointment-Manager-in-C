@@ -1,5 +1,6 @@
 /**
  * Task Manager Operations Header
+ * Author: Jaden Mardini
  * Author: 
  * 
  * This header defines the core data structures and function prototypes

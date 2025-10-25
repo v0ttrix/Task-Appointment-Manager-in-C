@@ -1,7 +1,10 @@
 # Task Appointment Manager in C
 ## Overview
 A comprehensive task management system written in C with persistent storage, input validation, and user-friendly interface.
-## Authors
+## Author
+Jaden Mardini
+
+## Contributors
 - 
 - 
 - 

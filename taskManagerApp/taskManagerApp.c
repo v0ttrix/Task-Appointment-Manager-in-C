@@ -1,5 +1,6 @@
 /**
  * Task Manager Application
+ * Author: Jaden Mardini
  *  
  * 
  * Professional task management system demonstrating:

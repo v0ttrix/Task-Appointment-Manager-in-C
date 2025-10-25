@@ -1,6 +1,7 @@
 #include <stdbool.h>
 /**
  * Task Manager Operations Implementation
+ * Author: Jaden Mardini
  * Author: 
  * 
  * Core implementation of task management operations including CRUD functionality.

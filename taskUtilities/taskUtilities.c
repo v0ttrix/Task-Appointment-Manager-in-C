@@ -1,5 +1,6 @@
 /**
  * Task Utilities Implementation
+ * Author: Jaden Mardini
  * Author: 
  * 
  * Implementation of utility functions for input validation and date handling.

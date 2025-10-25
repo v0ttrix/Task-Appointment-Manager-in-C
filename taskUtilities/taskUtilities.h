@@ -1,5 +1,6 @@
 /**
  * Task Utilities Header
+ * Author: Jaden Mardini
  * Author: 
  * 
  * Utility functions for task validation and helper operations.
