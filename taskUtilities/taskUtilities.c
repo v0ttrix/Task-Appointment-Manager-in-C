@@ -1,16 +1,14 @@
 /**
  * Task Utilities Implementation
- * Author: Jaden Mardini - PROG71990 - f24 - sec1 - GROUP #2
+ * Author: 
  * 
  * Implementation of utility functions for input validation and date handling.
  */
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include "taskUtilities.h"
-
 /**
  * Validates date format and basic date constraints
  * @param date: Date string in YYYY-MM-DD format
@@ -55,11 +53,10 @@ bool isValidDate(const char* date) {
     
     return day <= daysInMonth[month - 1];
 }
-
 /**
  * Gets validated input from user with length checking
  * @param buffer: Buffer to store input
- * @param maxLength: Maximum allowed length
+ * @param maxLength: 
  * @param prompt: Prompt message for user
  * @return: true if input is valid, false otherwise
  */
@@ -84,7 +81,6 @@ bool getValidatedInput(char* buffer, int maxLength, const char* prompt) {
     
     return true;
 }
-
 /**
  * Clears the input buffer to handle leftover characters
  */
@@ -92,12 +88,11 @@ void clearInputBuffer(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
-
 /**
  * Gets a validated integer within specified range
  * @param prompt: Prompt message for user
  * @param min: Minimum allowed value
- * @param max: Maximum allowed value
+ * @param max: 
  * @return: Valid integer within range
  */
 int getValidatedInteger(const char* prompt, int min, int max) {

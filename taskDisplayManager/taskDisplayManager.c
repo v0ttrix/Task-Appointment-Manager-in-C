@@ -1,17 +1,15 @@
 /**
  * Task Display Manager Implementation
- * Author: Max - PROG71990 - f24 - Sec 1 - Group 2
+ * Author: 
  * 
  * Implementation of display functions for task information.
  */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include "taskDisplayManager.h"
 #include "../taskManagerOperations/taskManagerOperations.h"
 #include "../taskUtilities/taskUtilities.h"
-
 /**
  * Prints a formatted header for task display
  */
@@ -19,14 +17,12 @@ void printTaskHeader(void) {
     printf("\n%-4s %-30s %-12s\n", "ID", "Description", "Date");
     printTaskSeparator();
 }
-
 /**
  * Prints a separator line for task display
  */
 void printTaskSeparator(void) {
     printf("%-4s %-30s %-12s\n", "----", "------------------------------", "------------");
 }
-
 /**
  * Displays a single task by ID
  */
@@ -46,7 +42,6 @@ void displaySingleTask(void) {
     printTaskHeader();
     printTaskDetails(taskId);
 }
-
 /**
  * Displays tasks within a specified date range
  */
@@ -105,7 +100,6 @@ void displayTasksInRange(void) {
         printf("No tasks found in the specified date range.\n");
     }
 }
-
 /**
  * Displays all tasks in the system
  */

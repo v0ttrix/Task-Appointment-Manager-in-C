@@ -1,6 +1,6 @@
 /**
  * Task Manager Application
- * Authors: Jaden Mardini, YashB, Max - PROG71990 - Group 2
+ *  
  * 
  * Professional task management system demonstrating:
  * - Modular C programming
@@ -9,13 +9,11 @@
  * - Memory management
  * - Cross-platform compatibility
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "../taskManagerOperations/taskManagerOperations.h"
 #include "../taskDisplayManager/taskDisplayManager.h"
 #include "../taskStorageHandler/taskStorageHandler.h"
-
 /* Cross-platform screen clearing */
 static void clearScreen(void) {
 #ifdef _WIN32
@@ -24,7 +22,6 @@ static void clearScreen(void) {
     system("clear");
 #endif
 }
-
 /* Display main menu with current status */
 static void displayMenu(void) {
     printf("\n=== Task Manager ===\n");
@@ -39,13 +36,11 @@ static void displayMenu(void) {
     printf("8. Save and Exit\n");
     printf("\nEnter your choice: ");
 }
-
 /* Wait for user input before continuing */
 static void waitForUser(void) {
     printf("\nPress Enter to continue...");
     while (getchar() != '\n');
 }
-
 /* Handle menu operations with proper error checking */
 static void handleMenuChoice(int choice) {
     clearScreen();
@@ -85,7 +80,6 @@ static void handleMenuChoice(int choice) {
     
     if (choice != 8) waitForUser();
 }
-
 int main(void) {
     int choice;
     

@@ -1,17 +1,15 @@
 #include <stdbool.h>
 /**
  * Task Storage Handler Implementation
- * Author: YashB - PROG71990 - Fall2024 - Group 2 - Project
+ * Author: 
  * 
  * Implementation of persistent storage operations for task data.
  */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include "taskStorageHandler.h"
 #include "../taskManagerOperations/taskManagerOperations.h"
-
 /**
  * Loads task data from disk into memory
  * @return: true if successful, false otherwise
@@ -65,7 +63,6 @@ bool loadDataFromDisk(void) {
     printf("Successfully loaded %d tasks from disk.\n", taskCount);
     return true;
 }
-
 /**
  * Saves task data from memory to disk
  * @return: true if successful, false otherwise

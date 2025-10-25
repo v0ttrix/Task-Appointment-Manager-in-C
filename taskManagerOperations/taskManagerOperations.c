@@ -1,22 +1,19 @@
 #include <stdbool.h>
 /**
  * Task Manager Operations Implementation
- * Author: Jaden Mardini - PROG71990 - f24 - sec1 - GROUP #2
+ * Author: 
  * 
  * Core implementation of task management operations including CRUD functionality.
  */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
 #include "taskManagerOperations.h"
 #include "../taskUtilities/taskUtilities.h"
-
 /* Global variables definition */
 int taskCount = 0;
 Task tasks[MAX_TASKS];
-
 /**
  * Checks if the task array is at maximum capacity
  * @return: true if full, false otherwise
@@ -24,7 +21,6 @@ Task tasks[MAX_TASKS];
 bool isTaskArrayFull(void) {
     return taskCount >= MAX_TASKS;
 }
-
 /**
  * Validates if a task ID is within valid range
  * @param taskId: The task ID to validate
@@ -33,7 +29,6 @@ bool isTaskArrayFull(void) {
 bool isValidTaskId(int taskId) {
     return taskId >= 0 && taskId < taskCount;
 }
-
 /**
  * Prints formatted task details
  * @param taskId: The ID of the task to print
@@ -46,7 +41,6 @@ void printTaskDetails(int taskId) {
     
     printf("%-4d %-30.30s %-12s\n", taskId, tasks[taskId].description, tasks[taskId].date);
 }
-
 /**
  * Adds a new task to the system
  * @return: true if successful, false otherwise
@@ -91,7 +85,6 @@ bool addTask(void) {
     printf("Task added successfully! (ID: %d)\n", taskCount - 1);
     return true;
 }
-
 /**
  * Deletes a task from the system
  * @return: true if successful, false otherwise
@@ -137,7 +130,6 @@ bool deleteTask(void) {
     printf("Task deleted successfully!\n");
     return true;
 }
-
 /**
  * Updates an existing task
  * @return: true if successful, false otherwise
@@ -199,7 +191,6 @@ bool updateTask(void) {
     printf("Task updated successfully!\n");
     return true;
 }
-
 /**
  * Searches for tasks containing a specific keyword
  */
