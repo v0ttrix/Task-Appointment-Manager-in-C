@@ -4,7 +4,7 @@ A comprehensive task management system written in C with persistent storage, inp
 ## Author
 Jaden Mardini
 
-## Contributors
+
 - 
 - 
 - 
